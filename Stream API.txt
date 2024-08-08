@@ -1,0 +1,64 @@
+Stream API
+Stream API is one of the java 8 feature by using this we processes collections of objects.
+Stream :
+Sequence of data that need to be processed.
+Streams take input from different sources like Collections, arrays.
+Streams uses internal iteration to process data.
+Stream Operations:
+Intermediate Operation: Tranformation (filter,sorted,map)
+Terminal Operation: count,forEach.
+Lazy Loading – because the computation is done after involking terminal operation.
+Stream Operations:
+filter(Predicate<T>)
+map(Function<T,R>)
+collect(Collector<T,A,R>)
+sorted(Comparator<T>)
+Example:
+package stream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+public class StreamEx
+{
+    public static void main(String args[])
+    {
+        List<Integer> num = Arrays.asList(23,14,30,06);
+        List<Integer> even = num.stream().filter(n -> n%2==0).collect(Collectors.toList());
+        System.out.println("Even Numbers: "+even);
+        int total = even.stream().mapToInt(Integer::intValue).sum();
+        System.out.println("Total Value :"+total);
+        List<Double> num1 = Arrays.asList(23.34,14.67,30.67,6.89);
+        double totaldoubl = num1.stream().mapToDouble(Double::doubleValue).max().getAsDouble();
+        System.out.println("Max Value :"+totaldoubl);
+
+    }
+}
+map and flatMap
+map – one to one
+It returns stream containing the transformed elements  in the same order as of the original stream.
+This transformation is one to one that means each element produces one output.
+flatMap
+flatMap - one to many
+This transformation is one to many that means each element produces multiple outputs that later flattened.
+flatMap = map+flattened
+ 
+ 
+package maps;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+public class MapsEx
+{
+    public static void main(String args[])
+    { // map
+        List<String> l1 = Arrays.asList("11","22","33","44");
+        List<Double> l3 = l1.stream().map(Double::valueOf).collect(Collectors.toList());
+        System.out.println ("Original List : "+l1);
+        System.out.println ("List after map operation : "+l3);
+       // flatMap
+        List<List<Integer>> li = Arrays.asList(Arrays.asList(11,12,13),Arrays.asList(24,34,44),Arrays.asList(23,14,06,30));
+        List<Integer>  flat = li.stream().flatMap(a->a.stream()).toList();
+        System.out.println ("Original List : "+li);
+        System.out.println ("List after map operation : "+flat);
+    }
+}

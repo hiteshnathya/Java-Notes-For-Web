@@ -1,0 +1,89 @@
+A servlet in Java is a class that enhances server functionalities, supporting applications accessed via a request-response model. Servlets, integral to Java programming, typically bolster web server applications by handling various types of requests, although they are most noted for their role in web applications. This versatility makes Java servlets a cornerstone in developing dynamic web content.
+There are several varieties of interfaces and classes available in the Servlet API. Some of them are as follows:
+HTTP Servlet
+Generic Servlet
+Servlet Request
+Servlet Response
+ 
+Java Servlet Architecture
+We can also consider the software architecture of a servlet as the life cycle of the Java Servlet. To write a Servlet, the user needs first to implement the Servlet Interface, directly or indirectly, using the following import command.
+import javax.servlet.*;
+Once the Servlet interface is imported, and we inherit the HTTP Class, we begin with the Java Servlet's life cycle.
+In the life cycle of a servlet, we have mainly three stages, which are mentioned below.
+init()
+service()
+destroy()
+We call these methods at their respective stages. The methods are resolved by generating the essential threads for the process to get executed.
+Java Servlet Life-Cycle
+The Java Servlet Life cycle includes three stages right from its start to the end until the Garbage Collector clears it. These three stages are described below.
+init()
+service()
+destroy()
+1. init()
+The init() is the germinating stage of any Java Servlet. When a URL specific to a particular servlet is triggered, the init() method is invoked.
+Another scenario when the init() method gets invoked is when the servers are fired up. With every server starting up, the corresponding servlets also get started, and so does the init() method.
+One important specialty of the init() method is the init() method only gets invoked once in the entire life cycle of the Servlet, and the init() method will not respond to any of the user's commands.
+The init() method Syntax:
+public void init() throws ServletException {
+ 
+//init() method initializing
+ 
+}
+service()
+The service() method is the heart of the life cycle of a Java Servlet. Right after the Servlet's initialization, it encounters the service requests from the client end.
+The client may request various services like:
+GET
+PUT
+UPDATE
+DELETE
+The service() method takes responsibility to check the type of request received from the client and respond accordingly by generating a new thread or a set of threads per the requirement and implementing the operation through the following methods.
+doGet() for GET
+doPut() for PUT
+doUpdate() for UPDATE
+doDelete() for DELETE
+The service() method Syntax:
+public void service(ServletRequest request, ServletResponse response)
+ 
+throws ServletException, IOException {
+ 
+}
+destroy()
+Like the init() method, the destroy() method is also called only once in the Java Servlet's entire life cycle.
+When the destroy() method is called, the Servlet performs the cleanup activities like,
+Halting the current or background threads
+Making a recovery list of any related data like cookies to Disk.
+After that, the Servlet is badged, ready for the Garbage collector to have it cleared.
+The destroy() method Syntax:
+public void destroy() {
+ 
+//destroy() method finalizing
+ 
+}
+ 
+ 
+ 
+Example
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+ 
+import java.io.*;
+public class Demo extends HttpServlet{
+public void doGet(HttpServletRequest req,HttpServletResponse res)
+throws ServletException,IOException
+{
+res.setContentType("text/html");//setting the content type
+PrintWriter pw=res.getWriter();//get the stream to write the data 
+ 
+//writing html in the stream
+pw.println("<html><body>");
+pw.println("Welcome to servlet");
+pw.println("</body></html>"); 
+ 
+pw.close();//closing the stream
+}} 
+has context menu
+
+
+has context menu

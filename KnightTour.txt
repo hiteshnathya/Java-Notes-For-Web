@@ -1,0 +1,83 @@
+
+The Knight's Tour Problem in Java
+The Knight's Tour Problem is a classic problem in computer science, mathematics, and chess. The Knight's Tour Problem involves finding a series of moves that a knight on a chessboard can make in order to visit every square only once.
+Java program that utilizes backtracking to solve this problem. The program will take an 8x8 chessboard as input and output a valid sequence of moves by the Knight that visits every square on the board exactly once.
+There can be two ways in which a knight can finish its tour. In the first way, the knight moves one step and returns back to the starting position forming a loop which is called a closed tour. In the second way i.e. the open tour, it finishes anywhere in the board.
+For a person who is not familiar with chess, note that the knight moves in a special manner. It can move either two squares horizontally and one square vertically or two squares vertically and one square horizontally in each direction. So, the complete movement looks like English letter 'L'.
+        int[] xMove = {2, 1, -1, -2, -2, -1, 1, 2};
+        int[] yMove = {1, 2, 2, 1, -1, -2, -2, -1};
+ 
+Suppose the size of given chess board is 8 and the knight is at the top-left position on the board. The next possible moves are shown below −
+Each cell in the above chess board holds a number, that indicates where to start and in how many moves the knight will reach a cell. The final values of the cell will be represented by the below matrix −
+Backtracking Approach to Solve Knight's tour problem
+The other way to solve this problem is to use backtracking. It is a technique that tries different possibilities until a solution is found or all options are tried. It involves choosing a move, making it, and then recursively trying to solve the rest of the problem. If the current move leads to a dead end, we backtrack and undo the move, then try another one.
+Start from any cell on the board and mark it as visited by the knight.
+Move the knight to a valid unvisited cell and mark it visited. From any cell, a knight can take a maximum of 8 moves.
+If the current cell is not valid or not taking to the solution, then backtrack and try other possible moves that may lead to a solution.
+Repeat this process until the moves of knight are equal to 8 x 8 = 64.
+import java.util.Arrays;
+public class Main {
+ static final int N = 8;
+ static int[][] sol = new int[N][N];
+ //check place is in range and not assigned yet
+ static boolean isValid(int x, int y) {   
+    return (x >= 0 && x < N && y >= 0 && y < N && sol[x][y] == -1);
+ }
+ static void displaySolution() {
+    System.out.println("The possible solution: ");
+    for (int x = 0; x < N; x++) {
+        for (int y = 0; y < N; y++)
+           System.out.printf("%3d ", sol[x][y]);
+        System.out.println();
+    }
+ }
+ static boolean knightTour(int x, int y, int move, int[] xMove, int[] yMove) {
+    int xNext, yNext;
+    //when the total board is covered
+    if (move == N*N)     
+        return true;
+    for (int k = 0; k < 8; k++) {
+        xNext = x + xMove[k];
+        yNext = y + yMove[k];
+        //check room is preoccupied or not
+       if (isValid(xNext, yNext)) {     
+           sol[xNext][yNext] = move;
+              if (knightTour(xNext, yNext, move+1, xMove, yMove))
+                 return true;
+              else
+                 // backtracking
+                 sol[xNext][yNext] = -1;
+        }
+    }
+    return false;
+ }
+ static boolean findKnightTourSol() {
+    //initially set all values to -1 of solution matrix   
+    for (int[] row : sol)
+        Arrays.fill(row, -1);
+        //all possible moves for knight
+        int[] xMove = {2, 1, -1, -2, -2, -1, 1, 2};
+        int[] yMove = {1, 2, 2, 1, -1, -2, -2, -1};
+        //starting from room (0, 0)
+        sol[0][0] = 0;     
+        if (!knightTour(0, 0, 1, xMove, yMove)) {
+          System.out.println("Solution does not exist");
+           return false;
+        } else
+           displaySolution();
+    return true;
+ }
+ public static void main(String[] args) {
+    findKnightTourSol();
+ }
+}
+ 
+[5:38 PM] Madabattula Rani (Unverified) (External)
+Day 10:
+Task 1: Tower of Hanoi Solver
+Create a program that solves the Tower of Hanoi puzzle for n disks. The solution should use recursion to move disks between three pegs (source, auxiliary, and destination) according to the game's rules. The program should print out each move required to solve the puzzle.
+ 
+Task 2: Traveling Salesman Problem
+Create a function int FindMinCost(int[,] graph) that takes a 2D array representing the graph where graph[i][j] is the cost to travel from city i to city j. The function should return the minimum cost to visit all cities and return to the starting city. Use dynamic programming for this solution.
+ 
+ 

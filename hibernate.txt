@@ -1,0 +1,666 @@
+[11:32 AM] Madabattula Rani (Unverified) (External)
+Create a Maven project in your IDE and add the following dependencies in the pom.xml file:
+<dependencies>
+   <dependency>
+       <groupId>org.hibernate.orm</groupId>
+       <artifactId>hibernate-core</artifactId>
+       <version>6.4.0.Final</version>
+   </dependency>
+   <dependency>
+       <groupId>mysql</groupId>
+       <artifactId>mysql-connector-java</artifactId>
+       <version>8.0.32</version>
+   </dependency>
+   <dependency>
+       <groupId>jakarta.persistence</groupId>
+       <artifactId>jakarta.persistence-api</artifactId>
+       <version>3.0.0</version>
+   </dependency>
+</dependencies>
+
+
+
+Step 2: Configure Hibernate
+Create a hibernate.cfg.xml file under the src/main/resources directory to configure Hibernate settings:
+
+
+
+<!DOCTYPE hibernate-configuration PUBLIC
+       "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+      "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+   <session-factory>
+       <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+       <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/hibernate_db?useSSL=false</property>
+       <property name="hibernate.connection.username">root</property>
+       <property name="hibernate.connection.password">pushpa123</property>
+       <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+       <property name="hibernate.show_sql">true</property>
+       <property name="hibernate.hbm2ddl.auto">update</property>
+       <mapping class="com.example.entity.User"/>
+   </session-factory>
+</hibernate-configuration>
+
+
+
+
+
+===============================
+Step 3: Create User Entity
+Create a User entity class to represent a user in the database:
+package com.example.entity;
+ 
+import jakarta.persistence.*;
+ 
+@Entity
+@Table(name = "user")
+public class User {
+ 
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private Long id;
+ 
+   @Column(name = "first_name")
+   private String firstName;
+ 
+   @Column(name = "last_name")
+   private String lastName;
+ 
+   @Column(name = "email")
+   private String email;
+ 
+   // Constructors, getters, setters, and toString() method
+   public User() {}
+ 
+   public User(String firstName, String lastName, String email) {
+       this.firstName = firstName;
+       this.lastName = lastName;
+       this.email = email;
+   }
+ 
+   public Long getId() {
+       return id;
+   }
+ 
+   public void setId(Long id) {
+       this.id = id;
+   }
+ 
+   public String getFirstName() {
+       return firstName;
+   }
+ 
+   public void setFirstName(String firstName) {
+       this.firstName = firstName;
+   }
+ 
+   public String getLastName() {
+       return lastName;
+   }
+ 
+   public void setLastName(String lastName) {
+       this.lastName = lastName;
+   }
+ 
+   public String getEmail() {
+       return email;
+   }
+ 
+   public void setEmail(String email) {
+       this.email = email;
+   }
+ 
+   @Override
+   public String toString() {
+       return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + "]";
+   }
+}
+=====================================
+Step 4: Create Hibernate Utility Class
+Create a utility class to manage Hibernate sessions:
+
+
+package com.example.util;
+ 
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+ 
+public class HibernateUtil {
+   private static StandardServiceRegistry registry;
+   private static SessionFactory sessionFactory;
+ 
+   public static SessionFactory getSessionFactory() {
+       if (sessionFactory == null) {
+           try {
+               registry = new StandardServiceRegistryBuilder().configure().build();
+               MetadataSources sources = new MetadataSources(registry);
+               Metadata metadata = sources.getMetadataBuilder().build();
+               sessionFactory = metadata.getSessionFactoryBuilder().build();
+           } catch (Exception e) {
+               e.printStackTrace();
+               if (registry != null) {
+                  StandardServiceRegistryBuilder.destroy(registry);
+               }
+           }
+       }
+       return sessionFactory;
+   }
+ 
+   public static void shutdown() {
+       if (registry != null) {
+           StandardServiceRegistryBuilder.destroy(registry);
+       }
+   }
+}
+Step 5: Create UserDao Class for CRUD Operations
+Create a UserDao class to handle CRUD operations on the User entity:
+
+package com.example.dao;
+ 
+import com.example.entity.User;
+import com.example.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+ 
+import java.util.List;
+ 
+public class UserDao {
+ 
+   public void saveUser(User user) {
+       Transaction transaction = null;
+       try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+           transaction = session.beginTransaction();
+           session.save(user);
+           transaction.commit();
+       } catch (Exception e) {
+           if (transaction != null) {
+               transaction.rollback();
+           }
+           e.printStackTrace();
+       }
+   }
+ 
+   public List<User> getUsers() {
+       try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+           return session.createQuery("FROM User", User.class).list();
+       }
+   }
+ 
+   public void updateUser(User user) {
+       Transaction transaction = null;
+       try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+           transaction = session.beginTransaction();
+           session.update(user);
+           transaction.commit();
+       } catch (Exception e) {
+           if (transaction != null) {
+               transaction.rollback();
+           }
+           e.printStackTrace();
+       }
+   }
+ 
+   public void deleteUser(Long userId) {
+       Transaction transaction = null;
+       try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+           transaction = session.beginTransaction();
+           User user = session.get(User.class, userId);
+           if (user != null) {
+               session.delete(user);
+           }
+           transaction.commit();
+       } catch (Exception e) {
+           if (transaction != null) {
+               transaction.rollback();
+           }
+           e.printStackTrace();
+       }
+   }
+}
+Step 6: Implement the Main Class
+Create a main class to test the CRUD operations using the UserDao class:
+
+
+package com.example;
+ 
+import com.example.dao.UserDao;
+import com.example.entity.User;
+import com.example.util.HibernateUtil;
+ 
+import java.util.List;
+ 
+public class HibernateCrudExample {
+ 
+   public static void main(String[] args) {
+       UserDao userDao = new UserDao();
+ 
+       // Create
+       userDao.saveUser(new User("Pushpa", "Rani", "rani@gmail.com"));
+       userDao.saveUser(new User("Santosh", "Kumar", "santosh@gmail.com"));
+ 
+       // Read
+       List<User> users = userDao.getUsers();
+       users.forEach(System.out::println);
+ 
+       // Update
+       User user = users.get(0);
+       user.setFirstName("Rani");
+       userDao.updateUser(user);
+ 
+       // Delete
+       userDao.deleteUser(user.getId());
+ 
+       // Read
+       users = userDao.getUsers();
+       users.forEach(System.out::println);
+ 
+       // Shutdown Hibernate
+       HibernateUtil.shutdown();
+   }
+}
+=========================================================
+2
+===================
+[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+HQL
+ 
+HQL and Case Sensitivity: HQL is case-insensitive except for java class and variable names. So SeLeCT is the same as sELEct is the same as SELECT.
+HQL From: HQL From is same as select clause in SQL, from Employee is same as select * from Employee. We can also create alias such as from Employee emp or from Employee as emp.
+HQL Join : HQL supports inner join, left outer join, right outer join and full join. For example, select e.name, a.city from Employee e INNER JOIN e.address a. In this query, Employee class should have a variable named address. We will look into it in the example code.
+Aggregate Functions: HQL supports commonly used aggregate functions such as count(*), count(distinct x), min(), max(), avg() and sum().
+Expressions: HQL supports arithmetic expressions (+, -, *, /), binary comparison operators (=, >=, <=, <>, !=, like), logical operations (and, or, not) etc.
+HQL also supports ordre by and group by clauses.
+HQL also supports sub-queries just like SQL queries.
+HQL supports DDL, DML and executing store procedures too.
+ 
+ 
+CREATE TABLE `Employee` (
+ `emp_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+ `emp_name` varchar(20) NOT NULL,
+ `emp_salary` double(10,0) NOT NULL DEFAULT '0',
+ PRIMARY KEY (`emp_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+ 
+CREATE TABLE `Address` (
+ `emp_id` int(11) unsigned NOT NULL,
+ `address_line1` varchar(50) NOT NULL DEFAULT '',
+ `zipcode` varchar(10) DEFAULT NULL,
+ `city` varchar(20) DEFAULT NULL,
+ PRIMARY KEY (`emp_id`),
+ CONSTRAINT `emp_fk_1` FOREIGN KEY (`emp_id`) REFERENCES `Employee` (`emp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ 
+INSERT INTO `Employee` (`emp_id`, `emp_name`, `emp_salary`)
+VALUES
+              (1, 'Pushpa', 100),
+              (2, 'Santosh', 200),
+              (3, 'Medha', 300),
+              (4, 'Rihaan', 400);
+ 
+ 
+INSERT INTO `Address` (`emp_id`, `address_line1`, `zipcode`, `city`)
+VALUES
+              (1, 'Aaaaa', '95129', 'Delhi'),
+              (2, 'bbbbb', '95051', 'Mumbai'),
+              (3, 'Bccccc', '560100', 'Bangalore'),
+              (4, 'Cdddde', '100100', 'Chennai');
+             
+commit;
+ 
+ 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+ <modelVersion>4.0.0</modelVersion>
+ <groupId>org.com</groupId>
+ <artifactId>HibernateExample</artifactId>
+ <version>0.0.1-SNAPSHOT</version>
+   <dependencies>
+      <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.3.5.Final</version>
+      </dependency>
+      <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+      </dependency>
+ </dependencies>
+</project>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Hibernate.cfg.xml
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+            "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+            "https://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ 
+ 
+ 
+ 
+   <session-factory>
+       <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+       <property name="hibernate.connection.password">pushpa123</property>
+       <property name="hibernate.connection.url">jdbc:mysql://localhost/hiber</property>
+       <property name="hibernate.connection.username">root</property>
+       <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+      
+       <property name="hibernate.current_session_context_class">thread</property>
+       <property name="hibernate.show_sql">true</property>
+      
+       <mapping class="com.example.model.Employee"/>
+       <mapping class="com.example.model.Address"/>
+   </session-factory>
+</hibernate-configuration>
+ 
+ 
+ 
+ 
+package com.example.util;
+ 
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+ 
+public class HibernateUtil {
+ 
+      private static SessionFactory sessionFactory;
+      
+      private static SessionFactory buildSessionFactory() {
+       try {
+           // Create the SessionFactory from hibernate.cfg.xml
+            Configuration configuration = new Configuration();
+            configuration.configure("hibernate.cfg.xml");
+            System.out.println("Hibernate Configuration loaded");
+            
+            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+            System.out.println("Hibernate serviceRegistry created");
+            
+            SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+ 
+ 
+ 
+            
+           return sessionFactory;
+       }
+       catch (Throwable ex) {
+           System.err.println("Initial SessionFactory creation failed." + ex);
+           ex.printStackTrace();
+           throw new ExceptionInInitializerError(ex);
+       }
+   }
+      
+      public static SessionFactory getSessionFactory() {
+            if(sessionFactory == null) sessionFactory = buildSessionFactory();
+       return sessionFactory;
+   }
+}
+ 
+ 
+ 
+ 
+package com.example.model;
+ 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+ 
+import org.hibernate.annotations.Cascade;
+ 
+@Entity
+@Table(name = "EMPLOYEE")
+public class Employee {
+ 
+      @Id
+      @GeneratedValue(strategy = GenerationType.IDENTITY)
+      @Column(name = "emp_id")
+      private long id;
+ 
+      @Column(name = "emp_name")
+      private String name;
+ 
+      @Column(name = "emp_salary")
+      private double salary;
+ 
+      @OneToOne(mappedBy = "employee")
+      @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+      private Address address;
+ 
+      public long getId() {
+            return id;
+      }
+ 
+      public void setId(long id) {
+            this.id = id;
+      }
+ 
+      public Address getAddress() {
+            return address;
+      }
+ 
+      public void setAddress(Address address) {
+            this.address = address;
+      }
+ 
+      public String getName() {
+            return name;
+      }
+ 
+      public void setName(String name) {
+            this.name = name;
+      }
+ 
+      public double getSalary() {
+            return salary;
+      }
+ 
+      public void setSalary(double salary) {
+            this.salary = salary;
+      }
+ 
+}
+ 
+ 
+ 
+ 
+ 
+package com.example.model;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+ 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+ 
+@Entity
+@Table(name = "ADDRESS")
+public class Address {
+ 
+      @Id
+      @Column(name = "emp_id", unique = true, nullable = false)
+      @GeneratedValue(generator = "gen")
+      @GenericGenerator(name = "gen", strategy = "foreign", 
+                          parameters = { @Parameter(name = "property", value = "employee") })
+      private long id;
+ 
+      @Column(name = "address_line1")
+      private String addressLine1;
+ 
+      @Column(name = "zipcode")
+      private String zipcode;
+ 
+      @Column(name = "city")
+      private String city;
+ 
+      @OneToOne
+      @PrimaryKeyJoinColumn
+      private Employee employee;
+ 
+      public long getId() {
+            return id;
+      }
+ 
+      public void setId(long id) {
+            this.id = id;
+      }
+ 
+      public String getAddressLine1() {
+            return addressLine1;
+      }
+ 
+      public void setAddressLine1(String addressLine1) {
+            this.addressLine1 = addressLine1;
+      }
+ 
+      public String getZipcode() {
+            return zipcode;
+      }
+ 
+      public void setZipcode(String zipcode) {
+            this.zipcode = zipcode;
+      }
+ 
+      public String getCity() {
+            return city;
+      }
+ 
+      public void setCity(String city) {
+            this.city = city;
+      }
+ 
+      public Employee getEmployee() {
+            return employee;
+      }
+ 
+      public void setEmployee(Employee employee) {
+            this.employee = employee;
+      }
+ 
+}
+ 
+ 
+ 
+package com.example.main;
+ 
+import java.util.Arrays;
+import java.util.List;
+ 
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+ 
+import com.example.model.Employee;
+import com.example.util.HibernateUtil;
+ 
+public class HQLEXample {
+ 
+      @SuppressWarnings("unchecked")
+      public static void main(String[] args) {
+            
+            //Prep work
+            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+            Session session = sessionFactory.getCurrentSession();
+            
+            //HQL example - Get All Employees
+            Transaction tx = session.beginTransaction();
+            Query query = session.createQuery("from Employee");
+            List<Employee> empList = query.list();
+            for(Employee emp : empList){
+                   System.out.println("List of Employees::"+emp.getId()+","+emp.getAddress().getCity());
+            }
+            
+            //HQL example - Get Employee with id
+            query = session.createQuery("from Employee where id= :id");
+            query.setLong("id", 3);
+            Employee emp = (Employee) query.uniqueResult();
+            System.out.println("Employee Name="+emp.getName()+", City="+emp.getAddress().getCity());
+            
+            //HQL pagination example
+            query = session.createQuery("from Employee");
+            query.setFirstResult(0); //starts with 0
+            query.setFetchSize(2);
+            empList = query.list();
+            for(Employee emp4 : empList){
+                   System.out.println("Paginated Employees::"+emp4.getId()+","+emp4.getAddress().getCity());
+            }
+            
+            //HQL Update Employee
+            query = session.createQuery("update Employee set name= :name where id= :id");
+            query.setParameter("name", "Pankaj Kumar");
+            query.setLong("id", 1);
+            int result = query.executeUpdate();
+            System.out.println("Employee Update Status="+result);
+ 
+            //HQL Delete Employee, we need to take care of foreign key constraints too
+            query = session.createQuery("delete from Address where id= :id");
+            query.setLong("id", 4);
+            result = query.executeUpdate();
+            System.out.println("Address Delete Status="+result);
+            
+            query = session.createQuery("delete from Employee where id= :id");
+            query.setLong("id", 4);
+            result = query.executeUpdate();
+            System.out.println("Employee Delete Status="+result);
+            
+            //HQL Aggregate function examples
+            query = session.createQuery("select sum(salary) from Employee");
+            double sumSalary = (Double) query.uniqueResult();
+            System.out.println("Sum of all Salaries= "+sumSalary);
+            
+            //HQL join examples
+            query = session.createQuery("select e.name, a.city from Employee e "
+                          + "INNER JOIN e.address a");
+            List<Object[]> list = query.list();
+            for(Object[] arr : list){
+                   System.out.println(Arrays.toString(arr));
+            }
+            
+            //HQL group by and like example
+            query = session.createQuery("select e.name, sum(e.salary), count(e)"
+                          + " from Employee e where e.name like '%i%' group by e.name");
+            List<Object[]> groupList = query.list();
+            for(Object[] arr : groupList){
+                   System.out.println(Arrays.toString(arr));
+            }
+            
+            //HQL order by example
+            query = session.createQuery("from Employee e order by e.id desc");
+            empList = query.list();
+            for(Employee emp3 : empList){
+                   System.out.println("ID Desc Order Employee::"+emp3.getId()+","+emp3.getAddress().getCity());
+            }
+            
+            //rolling back to save the test data
+            tx.rollback();
+            
+            //closing hibernate resources
+            sessionFactory.close();
+      }
+ 
+}
+ 
+has context menu
+ 
+ 

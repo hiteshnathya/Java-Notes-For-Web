@@ -1,0 +1,95 @@
+Implementation of Tree
+-------------------------
+ 
+Types of Tree
+ 
+Binary Tree --> A tree data structure in which each node will have at most two children (left child and Right child).
+ 
+AVL Tree -->Its a self balancing BST where the difference between heights of left tree and right tree cannot be more than one for all the nodes.
+ 
+Red Black Tree -->  Its a self balancing BST where each node contains an extra bit for the colour (it can be red or black)
+ 
+Tries --> A tree data structure that have set of strings these strings are keys.
+ 
+Heap -->  A tree data structure which have heap property so it can have min heap and max heap.
+ 
+ 
+Different operations 
+----------------------
+ 
+insert - inserts a node
+search - search for a value
+delete - delete a node
+traversal - visiting all the nodes.
+ 
+In-order (left,root,right)
+pre-order(root,left,right)
+post-order(left,right,root)
+ 
+ 
+? :
+(exp)? exp1 :exp2;
+ 
+ 
+ 
+Implementing Graph
+---------------------------
+ 
+Non linear DS
+ 
+Types
+--------
+ 
+Directed --- Its a graph where edges have a direction , oneway relation (ordered pair(u,v),it goes from u to v).
+ 
+Undirected --- No Direction , Two way (pair (u,v) is same as (v,u).
+ 
+Weighted Graphs --- A graph where edges have weights.
+ 
+Unweighted Graphs ---  A graph where edges don't have any weights.
+ 
+Directed Acyclic Graph(DAG) --- A graph with no cycles , no way to start at a node and follow a sequence.
+ 
+Operations:
+---------------
+-- add vertex
+-- add edge
+-- show
+ 
+Steps
+-----------
+ 
+we will create Hash Map
+write method addVertex
+write method addEdge
+write method display
+ 
+ 
+Tree Algorithms:
+ 
+Traversal: Visiting all the nodes in a tree. Common methods include in-order, pre-order, and post-order traversals.
+Insertion/Deletion: Adding or removing nodes while maintaining the tree’s properties.
+Balancing: Algorithms like rotations in AVL trees or color flips in Red-Black trees to maintain balance.
+Lowest Common Ancestor: Finding the lowest common ancestor of two nodes in a tree.
+Diameter: Finding the longest path between any two nodes in a tree.
+ 
+Graph Algorithms:
+ 
+Traversal: Exploring a graph, commonly done using Breadth-First Search (BFS) or Depth-First Search (DFS).
+Shortest Path: Finding the shortest path between nodes, with algorithms like Dijkstra’s or Bellman-Ford.
+Minimum Spanning Tree: Creating a tree that connects all nodes with the minimum total edge weight, using algorithms like Kruskal’s or Prim’s.
+Topological Sorting: Ordering of vertices in a Directed Acyclic Graph (DAG) so that for every directed edge uv, vertex u comes before v.
+Connectivity: Checking if the graph is connected, finding connected components, or checking for strong/weak connectivity in directed graphs.
+Maximum Flow: Finding the maximum flow in a flow network, with algorithms like Ford-Fulkerson or Edmonds-Karp.
+These algorithms are used to solve various problem types, such as optimization, scheduling, network flow, and many others.
+ 
+ 
+Breadth-First Search
+ 
+Breadth-First Search (BFS) is a classic graph traversal algorithm that explores a graph level by level. It uses a queue to keep track of the next vertex to visit and ensures that vertices are processed in the order they are discovered. Here’s how BFS works, along with a Java implementation:
+BFS Algorithm:
+1.	Start by enqueuing the root node (or any starting node).
+2.	Dequeue a node from the front of the queue and process it.
+3.	Enqueue all unvisited neighbors of the dequeued node.
+4.	Mark the dequeued node as visited.
+5.	Repeat steps 2-4 until the queue is empty.

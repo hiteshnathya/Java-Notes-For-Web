@@ -1,0 +1,102 @@
+[11:03 AM] Madabattula Rani (Unverified) (External)
+Longest Common Subsequence (Problem Type: Subsequence)
+Longest common subsequence of characters is a sequence (group of characters ) that is present in two or more strings.
+Example
+Abbcssdabcdes
+Abcbssadabcesd
+The longest common subsequence is “dabc”.
+Algorithm
+1     Two dimensional Array where the rows stores the first string characters and the column stores the 2nd string characters.
+2     Each character of the fisrt string compare to the character of other string if they are same increment the value in the array  and if they are not matched than take the maximum value between the value in the array at that position and the value in the array above to the left.
+ 
+ 
+package subsequence;
+ 
+public class LCS
+{
+ 
+  public static int lcs(char[]x,char[]y,int m, int n )
+  {
+       int [][]l = new int[m+1][n+1];
+       for(int i=0;i<=m;i++)
+       {
+           for(int j=0;j<=n;j++)
+           {
+               if(i==0 || j==0)
+                   l[i][j]=0;
+               else if(x[i-1]==y[j-1])
+                  l[i][j] = l[i-1][j-1]+1;
+               else
+                   l[i][j] = Math.max(l[i-1][j],l[i][j-1]);
+ 
+          }
+       }
+     return l[m][n];
+  }
+ 
+  public static void main(String args[])
+  {
+       String s1 = "abccba";
+       String s2 = "abddba";
+ 
+       char f [] = s1.toCharArray();
+       char s[] = s2.toCharArray();
+       int m = s1.length();
+       int n = s2.length();
+      int  lon = lcs(f,s,m,n);
+       System.out.println("The longest subsequence is : "+lon);
+       }
+}
+ 
+[12:44 PM] Madabattula Rani (Unverified) (External)
+Longest Increasing Subsequence (Problem Type: Subsequence)
+A subsequence of an array is a list of elements of the array where some elements are deleted ( or not deleted at all) and they should be in the same order in the subsequence as in the original array.
+For example, for the array: [2,3,1] , the subsequences will be [{2},{3},{1},{2,3},{2,1},{3,1},{2,3,1}} but {3,2} is not a subsequence because its elements are not in the same order as the original array.
+What is the Longest Increasing Subsequence?
+The longest increasing subsequence is described as a subsequence of an array where:
+All elements of the subsequence are in increasing order.
+This subsequence itself is of the longest length possible.
+ 
+Steps
+First, make a 1D array of size n.
+Next, you must iterate it for each element from index 1 to n-1.
+You will iterate the elements with indices smaller than the current element in a nested loop for each element.
+In this nested loop, if you find the element’s value is lesser than the current element, then you will assign lis[i] with (lis[j]+1) and if (lis[j]+1) is greater than lis[i].
+Finally, you will traverse the entire lis[] array to find the maximum element, which will conclude your answer.
+ 
+ 
+package subsequence;
+public class LIS
+{
+    public static  int lis(int arr[])
+    {
+        int n = arr.length;
+        int lis[] = new int[n];
+        for(int i=0;i<n;i++)
+            lis[i] = 1;
+        for(int i=1;i<n-1;i++)
+        {
+            for(int j=0;j<i;j++)
+            {
+                if(arr[i]>arr[j] && lis[i]< lis[j] +1)
+                    lis[i]= lis[j]+1;
+            }
+        }
+        int m=0;
+        for( int i=0;i<n;i++)
+        {
+            if (m<lis[i])
+                m= lis[i];
+        }
+        return m;
+    }
+    public static void main(String args[])
+    {
+        int arr[] = {7,7,7,7,7,7,7};
+        int length = lis(arr);
+        System.out.println("Lenght of the Longest Increasing Subsequence is : "+ length);
+    }
+}
+Arrays in Data Structure: A Guide With Examples [Updated]
+Arrays in data structure allow solving some high-level problems like the longest consecutive subsequence program. Learn all about array in data structure now!
+ 

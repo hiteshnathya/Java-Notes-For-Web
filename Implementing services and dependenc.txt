@@ -1,0 +1,442 @@
+Implementing services and dependency injection
+ 
+Services in Angular are simply typescript classes with the @injectible decorator. This decorator tells angular that the class is a service and can be injected into components that need that service. They can also inject other services as dependencies.
+As mentioned earlier, these services are used to share a single piece of code across multiple components. These services are used to hold business logic.
+ 
+Purpose of Using Services
+Code Organization: Services help to keep your codebase clean and maintainable by separating concerns.
+Reuse: Services can be injected into multiple components, making it easy to reuse code.
+Dependency Injection: Services are typically injected into components using Angular’s dependency injection system, which makes it easier to manage dependencies and test components in isolation.
+ 
+Usingservice component
+Usingservice.component.html
+<div>
+   <div> Current Date: {{currentDate}}</div>
+   <div> Current Time: {{currentTime}}</div>
+ </div>
+Usingservice.component.ts
+import { Component } from'@angular/core';
+import { TimeService } from'../time.service';
+@Component({
+ selector:'app-usingservice',
+ templateUrl:'./usingservice.component.html',
+ styleUrl:'./usingservice.component.css'
+})
+exportclass UsingserviceComponent {
+ currentDate:string;
+currentTime:string;
+ title= 'ServicesDemo';
+ constructor(privatetimeService:TimeService) 
+ {
+this.currentDate= this.timeService.getTime().toLocaleDateString();
+this.currentTime= this.timeService.getTime().toLocaleTimeString();
+ }
+ 
+}
+ 
+App.component.html
+<div>
+ <div> Current Date: {{currentDate}}</div>
+ <div> Current Time: {{currentTime}}</div>
+</div>
+<app-usingservice>  </app-usingservice>
+ 
+App.component.ts
+import { Component } from'@angular/core';
+import { TimeService } from'./time.service';
+@Component({
+ selector:'app-root',
+ templateUrl:'./app.component.html',
+ styleUrl:'./app.component.css'
+})
+exportclass AppComponent {
+currentDate:string;
+currentTime:string;
+ title= 'ServicesDemo';
+ constructor(privatetimeService:TimeService) 
+ {
+this.currentDate= this.timeService.getTime().toLocaleDateString();
+this.currentTime= this.timeService.getTime().toLocaleTimeString();
+ }
+}
+ 
+App.module.ts
+import { NgModule } from'@angular/core';
+import { BrowserModule } from'@angular/platform-browser';
+ 
+import { AppRoutingModule } from'./app-routing.module';
+import { AppComponent } from'./app.component';
+import { TimeService } from'./time.service';
+import { UsingserviceComponent } from './usingservice/usingservice.component';
+ 
+@NgModule({
+ declarations: [
+   AppComponent,
+   UsingserviceComponent
+ ],
+ imports: [
+   BrowserModule,
+   AppRoutingModule
+ ],
+ providers: [TimeService],
+ bootstrap: [AppComponent]
+})
+exportclass AppModule { }
+ 
+time.service.ts
+import { Injectable } from'@angular/core';
+ 
+@Injectable({
+ providedIn:'root'
+})
+exportclass TimeService {
+ 
+ constructor() { }
+ getTime()
+ {
+   returnnew Date();
+ }
+}
+Implementing routing in Angular
+Routing in Angular allows the users to create a single-page application with multiple views and allows navigation between them. Users can switch between these views without losing the application state and properties.
+Approach:
+Create an Angular app that to be used.
+Create the navigation links inside the app component and then provide the “routerLink” directive to each route and pass the route value to “routerLink” directive.
+Then add the routes to the routing.module.ts file and then import the routing.module.ts into the app.module.ts file.
+ 
+App.component.html
+<mat-toolbarcolor="accent">
+<span>This is Routing</span><br>
+<nav><a routerLink="home"> Home</a></nav>
+</mat-toolbar>
+ 
+<router-outlet></router-outlet>
+ 
+App.routing.module.ts
+import { NgModule } from'@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { HomeComponent } from'./home/home.component';
+import { AboutUsComponent } from'./about-us/about-us.component';
+constroutes:Routes = [{path:'home',component:HomeComponent},
+ {path:'about-us',component:AboutUsComponent}
+];
+ 
+@NgModule({
+ imports: [RouterModule.forRoot(routes)],
+ exports: [RouterModule]
+ 
+})
+ 
+exportclass AppRoutingModule { }
+ 
+app.module.ts
+import { NgModule } from'@angular/core';
+import { MatToolbarModule } from'@angular/material/toolbar';
+import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
+ 
+import { AppRoutingModule } from'./app-routing.module';
+import { AppComponent } from'./app.component';
+import { HomeComponent } from'./home/home.component';
+import { AboutUsComponent } from'./about-us/about-us.component';
+ 
+@NgModule({
+ declarations: [
+   AppComponent,
+   HomeComponent,
+   AboutUsComponent
+ ],
+ imports: [
+   BrowserModule,
+   AppRoutingModule,
+   MatToolbarModule
+   
+ ],
+ providers: [
+   provideClientHydration()
+ ],
+ bootstrap: [AppComponent]
+})
+exportclass AppModule { }
+ 
+ 
+ 
+ 
+ 
+ 
+Working with forms and validation
+Forms in Angular
+· In Angular, Forms provides a set of features that help us handle and manage user input in a structured and efficient manner.
+· Forms are the main part of web applications that allow users to interact with the application and submit data to the application.
+Types of Forms in Angular
+Angular provides the following two types of forms:
+1. Template-Driven Forms
+· Template-driven forms are the basic forms that are suitable for the development of a limited number of fields and with simpler validation.
+· In this form, each field is represented as a property in the component class.
+· You Need to import FormsModule from the ‘@angular/forms’ package.
+Following are the key concepts related to validation objects, directives, and properties that we used while creating the template-driven forms in Angular.
+· ngForm Directive: This directive represents an angular form and exposes methods and properties related to it for validation and data manipulation purposes.
+· ngModel Directive: This directive is used to achieve two-way data bindings between different form control elements.
+· Validation Properties: Angular provides different validator properties that can be applied to form controls to indicate their validation state.
+1. touched: A boolean indicating whether the control has been touched.
+2. untouched: The opposite of touched
+3. valid: A boolean indicating whether the control’s value is valid.
+4. invalid: The opposite of valid
+· Validation Directives: Angular provides several built-in validation directives that can be used with ngModel to perform validation. Some common ones include:
+1. required: Ensures the control has a non-empty value.
+2. min length and max length: Specifies the minimum and maximum length for the value.
+3. pattern: Validates the value against a regular expression.
+4. email: Validates that the value is a valid email address.
+2. Reactive Forms
+· Reactive forms, or model-driven forms, are the types of forms in Angular that are suitable for creating a large form with different form fields and complex validation.
+· In the reactive form, each form field is considered a Form Control, and a set of form controls is called a Form Group.
+· The validation rules are defined in the component with the Validators object, and validation messages can be displayed in the template with the help of the validation property.
+· ReactiveFormModule needs to be imported from the ‘@angular/forms’ package.
+ 
+ 
+Example
+--- Create a project and create a class file i.e Employee.ts
+Create component Employeeform
+Employee.ts
+exportclass Employee {
+   constructor(
+   publicname:string,
+      publicid: number,
+       publicdepartment:string
+     
+   ){}
+}
+ 
+Employeeform.component.ts
+ 
+import { Component } from'@angular/core';
+import { Employee } from'../employee';
+@Component({
+ selector:'app-employeeform',
+ templateUrl:'./employeeform.component.html',
+ styleUrl:'./employeeform.component.css'
+})
+exportclass EmployeeformComponent {
+e1 =new Employee("rani", 101, "IT");
+submit=false;
+onSubmit(){
+ this.submit= true;
+}
+}
+ 
+Appmodule.ts
+import { NgModule } from'@angular/core';
+import { BrowserModule } from'@angular/platform-browser';
+import { FormsModule } from'@angular/forms';
+import { AppRoutingModule } from'./app-routing.module';
+import { AppComponent } from'./app.component';
+import { EmployeeformComponent } from './employeeform/employeeform.component';
+ 
+@NgModule({
+ declarations: [
+   AppComponent,
+   EmployeeformComponent
+ ],
+ imports: [
+   BrowserModule,
+   AppRoutingModule,
+   FormsModule
+ ],
+ providers: [],
+ bootstrap: [AppComponent]
+})
+exportclass AppModule { }
+ 
+app.component.html
+<app-employeeform></app-employeeform>
+ 
+ 
+Employeeform.component.html
+<h2>Employee form </h2>
+<divclass ="container">
+   <form>
+<divclass ="form-group">
+   <label>Name</label>
+   <inputtype="text"class="form-control"[(ngModel)]="e1.name"name="name">      
+</div>
+ 
+<divclass ="form-group">
+   <label>Id</label>
+   <inputtype="text"class="form-control"[(ngModel)]="e1.id"name="id">
+</div>
+<divclass ="form-group">
+   <label>Department</label>
+   <inputtype="text"class="form-control"[(ngModel)]="e1.department"name="department">
+</div>
+ 
+<buttontype="submit"class="btn btn-success" (click)="onSubmit()">Submit</button>
+   </form>
+ 
+</div>
+ 
+ 
+ 
+ 
+Observable in Angular
+Angular uses the RxJS library heavily in its framework to implement Reactive Programming. Some of the examples where reactive programming is used are
+Reacting to an HTTP request in Angular
+Value changes / Status Changes in Angular Forms
+The Router and Forms modules use observables to listen for and respond to user-input events.
+You can define custom events that send observable output data from a child to a parent component.
+The HTTP module uses observables to handle AJAX requests and responses.
+The RxJs has two main players
+Observable
+Observers ( Subscribers)
+What is an Observable in Angular
+Observable is a function that converts the ordinary data stream into an observable one. You can think of Observable as a wrapper around the ordinary data stream.
+An observable stream or simple Observable emits the value from the stream asynchronously. It emits the complete signals when the stream completes or an error signal if the stream errors out.
+Observables are declarative. You define an observable function just like any other variable. The observable starts to emit values only when someone subscribes to it.
+Who are the observers (subscribers)
+The Observable is only useful if someone consumes the value emitted by the observable. We call them observers or subscribers.
+The observers communicate with the Observable using callbacks
+The observer must subscribe to the observable to receive the value from the observable. While subscribing, it optionally passes the three callbacks. next(), error() & complete()
+The observable emits the value as soon as the observer or consumer subscribes to it.
+The observable invokes the next() callback whenever the value arrives in the stream. It passes the value as the argument to the next callback. If the error occurs, then the error() callback is invoked. It invokes the complete() callback when the stream completes.
+Observers/subscribers subscribe to Observables.
+The observer registers three callbacks with the observable at the time of subscribing. i .e next(), error() & complete()
+All three callbacks are optional
+The observer receives the data from the observer via the next() callback
+They also receive the errors and completion events from the Observable via the error() & complete() callbacks
+Import the required libraries
+RxJs library is installed automatically when you create the Angular project. Hence there is no need to install it.
+Import the Observable from the rxjs library
+import { Observable } from 'rxjs';
+Subscribing to the observable
+We subscribe to the observable by invoking the subscribe method on it.
+We either pass an observer object or the next() callback as an argument. The arguments are optional. (The subscribe method signature was changed in RxJs 6.4. Scroll down for older syntax.)
+An observer object is an object that optionally contains the  next, error and complete methods. The signature of the observer object is shown below.
+export interface Observer<T> {  
+ next: (value: T) => void;  
+ error: (err: any) => void;  
+ complete: () => void; 
+}
+ 
+ 
+ 
+app.component.ts
+ 
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+ 
+@Component({
+ selector: 'my-app',
+ template: `
+ 
+ <h1>Angular Observable </h1>
+ 
+<br><br><br>
+Refer
+<a href="# “>Angular Observable </a>
+ `
+})
+export class AppComponent implements OnInit {
+ 
+ 
+ obs = new Observable(observer => {
+   console.log('Observable starts');
+   observer.next('1');
+   observer.next('2');
+   observer.next('3');
+   observer.next('4');
+   observer.next('5');
+ });
+ 
+ ngOnInit() {
+   this.obs.subscribe( {
+     next: (val) => {
+       console.log(val);
+     }, //next callback
+     error: (error) => {
+       console.log('error');
+     }, //error callback
+     complete:() => {
+       console.log('Completed');
+     } //complete callback
+   }
+   );
+ }
+}
+ 
+Testing in Angular with Mocha and Chai
+ 
+Create project
+Install
+npm i --save-dev mocha
+npm i --save-dev chai
+ 
+package.json
+{
+ "name": "tesing-angular",
+ "version": "0.0.0",
+"directories": {
+  "test": "test"
+},
+ "scripts": {
+   "test": "mocha"
+ },
+ 
+ "private": true,
+ "dependencies": {
+   "@angular/animations": "^18.0.0",
+   "@angular/common": "^18.0.0",
+   "@angular/compiler": "^18.0.0",
+   "@angular/core": "^18.0.0",
+   "@angular/forms": "^18.0.0",
+   "@angular/platform-browser": "^18.0.0",
+   "@angular/platform-browser-dynamic": "^18.0.0",
+   "@angular/router": "^18.0.0",
+   "rxjs": "~7.8.0",
+   "tslib": "^2.3.0",
+   "zone.js": "~0.14.3"
+ },
+ "devDependencies": {
+   "@angular-devkit/build-angular": "^18.0.0",
+   "@angular/cli": "^18.0.0",
+   "@angular/compiler-cli": "^18.0.0",
+   "@types/jasmine": "~5.1.0",
+   "chai": "^5.1.1",
+   "jasmine-core": "~5.1.0",
+   "karma": "~6.4.0",
+   "karma-chrome-launcher": "~3.2.0",
+   "karma-coverage": "~2.2.0",
+   "karma-jasmine": "~5.1.0",
+   "karma-jasmine-html-reporter": "~2.1.0",
+   "mocha": "^10.7.0",
+   "typescript": "~5.4.2"
+ }
+ 
+}
+ 
+Create a file app.js in the src folder
+app.js
+constadd = (a, b) => a+ b;
+ 
+module.exports= {
+add,
+};
+ 
+Create a folder test in the root  and inside test folder create test.app.js
+test.app.js
+constassert =require("assert");
+const { add } =require("../src/app");
+ 
+describe("Add the numbers", () => {
+it("should return the sum of two numbers", () => {
+  constresult =add(1, 2);
+  assert.equal(result, 3);
+});
+});
+ 
+ 
+Run
+Npm run test
+ 
+ 
+has context menu
+
+
+has context menu

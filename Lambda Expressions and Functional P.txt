@@ -1,0 +1,197 @@
+Lambda Expressions and Functional Programming
+Lambda Expressions – Is an anonymous function( function without name) and with parameters and body.
+An -> (arrow) symbol is used.
+Syntax:
+() -> expression.
+(parameters) -> { body }
+ 
+@FunctionalInterface
+interface Operate<T>
+{
+    //abstract method
+    T calculate(T a, T b);
+}
+class Operations
+{
+    public static void main(String args[])
+    {
+        Operate<Integer> rf = (a,b)-> a+b;
+       System.out.println( rf.calculate(25,35));
+        Operate<Double> rf1 = (a,b)-> a+b;
+        System.out.println( rf1.calculate(25.789,35.567));
+        Operate<String> rf3 = (a,b)-> a+b;
+        System.out.println( rf3.calculate("356","456"));
+    }
+}
+ForEach Example
+List<String> l1 = new ArrayList<>();
+l1.add("sdhjs");
+l1.add("hcgdshc");
+l1.add("dewtd");
+l1.forEach(p ->{System.out.println(p);});
+ 
+ 
+ 
+Lambda Expressions represents an instance of Functional Interface.
+Functional Interface(FI)
+Is an Interface which have only one abstract method but it can have any number of default static methods.
+It supports Lambda Expressions
+FI are used with LambdaExpressions, which represents an instance of the FI in a concise way.
+------ User Defined FI
+------ BuiltIn FI (present in java.util package)(Consumer, Function, Predicate,Supplier)
+ 
+ 
+ 
+Consumer
+It is a Functional Interface which takes a single argument and does not return any result.
+Interface Consumer<T>
+{
+void accept(T t);
+}
+ 
+ 
+Example :
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+public class ConsumerEx
+{
+    public static void main(String args[])
+    {
+        List<Integer> l1 = new ArrayList<>(Arrays.asList(11,22,33)); // list created
+        System.out.println("List with original data "+l1);
+        
+        //Consumer FI
+        Consumer<List<Integer>> product = list -> {
+            for(int i=0;i< list.size();i++)
+            {
+                list.set(i,list.get(i)*2);
+            }
+        };
+        // Calling the accept method of the Consumer FI
+      product.accept(l1);
+      System.out.println("List after applying Consumer accept method "+l1);     
+      
+    }
+}
+ 
+ 
+Supplier
+The supplier interface returns the supplier of results.
+It has one method get().
+It does not take any argument but returns result.
+Interface Supplier<T>
+{
+T get();
+}
+Example:
+package functionalinterface;
+import java.util.function.Supplier;
+public class SupplierEx
+{
+    public static void main(String args[])
+    {
+        Supplier<Double> result = Math::random;
+        System.out.println(result.get());
+    }
+}
+ 
+Predicate
+It’s a Functional Interface which takes one argument and returns a Boolean value.
+It has one method test(T t).
+ 
+Interface Predicate<T>
+{
+boolean test(T t);
+}
+ 
+package functionalinterface;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+public class PredicateEx {
+    public static void main(String args[])
+    {
+List<String> li = Arrays.asList("Ram", "Shyam","Sita","Sam");
+// predicate to filter the strings starts with 'S'.
+Predicate<String> withS = l1 -> l1.startsWith("S");
+List<String>  names = li.stream().filter(withS).collect(Collectors.toList());
+System.out.println("Names starts with 'S'");
+System.out.println(names);
+// predicate to filter the strings with length greater than 3
+Predicate<String> length = l2 -> l2.length()>2;
+List<String> length3 = li.stream().filter(length).collect(Collectors.toList());
+System.out.println("Names greater than length 2");
+System.out.println(length3);
+}
+}
+ 
+Function
+It’s a Functional interface which takes one argument and returns result.
+It is mainly used for data transformation.
+Function<T,R>
+package functionalinterface;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+public class FunctionEx
+{
+    public static void main(String args[])
+    {
+        List<String> li = Arrays.asList("Hi", "Hello"," How ","Oh ");
+        System.out.println("Greetings");
+        System.out.println(li);
+        Function<String,String> adding = s -> s+" !";
+        List<String> greetings = li.stream().map(adding).collect(Collectors.toList());
+        System.out.println("Greetings with Exclamation");
+        System.out.println(greetings);
+
+    }
+
+}
+BiPredicate
+It takes two arguments and returns Boolean value.
+Example:
+BiPredicate<Integer, Integer> greater = (x,y) -> x>y;
+System.out.println("Is the number greater : "+greater.test(50,59));
+ 
+BiConsumer
+It takes two arguments and perform some action on them .
+BiConsumer<List<Integer>, List<Integer>> compare = (l11, l2) -> {
+        if (l11.size() == l2.size()) {
+            System.out.println("True");
+        }
+        else {
+            System.out.println("False");
+        }
+};
+    List<Integer> aa = Arrays.asList(2,3,4);
+    List<Integer> ab = Arrays.asList(2,3);
+    compare.accept(aa,ab);
+}
+ 
+BiFunction
+It takes two arguments and produces the result.
+Example:
+BiFunction<Integer,Integer,Integer> add = (x,y)-> x+y;
+System.out.println(add.apply(50,40));
+BiFunction<Double,Double,Double> sum = (x,y)-> x+y;
+System.out.println(sum.apply(500.345,400345.67));
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Functional Interfaces: Predicate, Function, Consumer, Supplier

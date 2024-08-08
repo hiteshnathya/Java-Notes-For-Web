@@ -1,0 +1,46 @@
+Dijkstra’s algorithm is a famous algorithm for finding the shortest paths between nodes in a graph, which may represent, for example, road networks. It was conceived by computer scientist Edsger W. Dijkstra in 1956 and published three years later.
+ 
+The algorithm exists in many variants; Dijkstra’s original variant found the shortest path between two nodes, but a more common variant fixes a single node as the “source” node and finds shortest paths from the source to all other nodes in the graph, producing a shortest-path tree.
+ 
+let’s consider a simple weighted graph and perform the steps of Dijkstra’s algorithm to find the shortest path from a source node to all other nodes:
+ 
+Initialize: Set the distance to the source node to 0 and to all other nodes to infinity. Set the previous node for each node to undefined. Add all nodes to an unvisited set.
+Visit node: Select the unvisited node with the smallest distance (initially, this will be the source node), and consider all its unvisited neighbors.
+Update distances: For each unvisited neighbor, calculate the tentative distance through the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.
+Mark as visited: Once we have considered all of the unvisited neighbors of the current node, mark the current node as visited and remove it from the unvisited set. A visited node will not be checked again.
+Repeat: If there are unvisited nodes, go back to step 2.
+Let’s apply these steps to a graph with nodes A, B, C, D, E, and F, where the starting node is A:
+ 
+Graph representation:
+A - B - C
+|   |   |
+D - E - F
+ 
+Assume the following edge weights:
+ 
+A-B: 4, A-D: 2
+B-C: 5, B-E: 10
+C-F: 3
+D-E: 3
+E-F: 4
+ 
+Dry Run:
+ 
+Initialize distances from A: A: 0, B: ∞, C: ∞, D: ∞, E: ∞, F: ∞
+Visit A, update neighbors: B: 4, D: 2
+Visit D (smallest distance), update neighbors: E: 5
+Visit B, update neighbors: C: 9, E: 10 (E is not updated because 5 < 10)
+Visit E, update neighbors: F: 9
+Visit C, update neighbors: F: 9 (F is not updated because 9 < 12)
+Visit F, all nodes visited.
+The shortest paths from A to all other nodes are:
+ 
+A -> B: 4
+A -> C: 9 (A -> B -> C)
+A -> D: 2
+A -> E: 5 (A -> D -> E)
+A -> F: 9 (A -> D -> E -> F)
+ 
+So, Dijkstra’s algorithm iteratively updates the shortest paths from the source to each node. The algorithm is efficient and guarantees to find the shortest path if all edge weights are non-negative
+ 
+ 

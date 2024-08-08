@@ -1,0 +1,94 @@
+Dependency injection (DI) Overview
+Dependency injection is a fundamental concept in the Spring framework. It refers to a design pattern where objects are provided with their dependencies rather than creating them internally.
+In Spring, Dependency Injection (DI) is achieved through the Inversion of Control (IoC) container. The container manages the creation and lifecycle of objects and injects the required dependencies into the object when it is created.
+The DI mechanism is implemented through constructor injection, setter injection, or field injection. Constructor injection involves passing the required dependencies through the constructor of the object. Setter injection involves injecting dependencies through the object's setter methods, and field injection involves injecting dependencies directly into the object's fields.
+The advantages of using dependency injection in Spring include increased modularity, flexibility, and testability of the application. By externalizing the configuration of dependencies, it becomes easier to swap out implementations and test individual components in isolation.
+Types of Dependency Injection
+Constructor-based dependency injection
+Setter-based dependency injection
+Field-based dependency injection
+Constructor-based dependency injection
+ 
+package org.example;
+public interface Message
+{
+    public void sendings(String message);
+}
+ 
+ 
+package org.example;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+@Component
+public class ConstructorBased
+{
+    private Message message;
+@Autowired
+    public ConstructorBased(@Qualifier("A")Message message) {
+        super();
+        this.message = message;
+    }
+    public void receiving(String message) {
+ this.message.sendings("message");
+    }
+}
+ 
+ 
+package org.example;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+public class Application
+{
+    public static void main(String args[])
+    {
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(AppConfiguration.class);
+        ConstructorBased constructorBased = applicationContext.getBean(ConstructorBased.class);
+        constructorBased.receiving("This is from C");
+    }
+}
+ 
+ 
+package org.example;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+@Configuration
+@ComponentScan("org.example")
+public class AppConfiguration
+{
+}
+ 
+package org.example;
+import org.springframework.stereotype.Service;
+@Service("A")
+public class A implements Message
+{
+    public void sendings(String message)
+    {
+        System.out.println("This is A class sending"+message);
+    }
+}
+ 
+ 
+package org.example;
+import org.springframework.stereotype.Service;
+@Service("B")
+public class B implements Message
+{
+    public void sendings(String message)
+    {
+        System.out.println("This is B class sending"+message);
+    }
+}
+ 
+package org.example;
+import org.springframework.stereotype.Service;
+@Service("C")
+public class C implements Message
+{
+    public void sendings(String message)
+        {
+            System.out.println("This is C class sending"+message);
+        }
+}
